@@ -1,0 +1,361 @@
+---
+title: "CS300 Proj2a"
+author: "Diyang Yu"
+date: "April 1, 2017"
+output:
+  html_document:
+    highlight: tango
+    theme: cerulean
+  word_document: default
+header-includes:
+- \usepackage{bbm}
+- \usepackage{amsmath}
+---
+
+```{r,warning=FALSE,message=FALSE}
+# Get the pixels values. Now you will have 50 x 50 pixels.
+
+library(jpeg)
+#library(imager)
+jpg1 <- readJPEG("face1.jpg")
+jpg2 <- readJPEG("face2.jpg")
+jpg3 <- readJPEG("face3.jpg")
+jpg4 <- readJPEG("face4.jpg")
+jpg5 <- readJPEG("face5.jpg")
+jpg6 <- readJPEG("face6.jpg")
+jpg7 <- readJPEG("face7.jpg")
+jpg8 <- readJPEG("face8.jpg")
+jpg9 <- readJPEG("face9.jpg")
+jpg10 <- readJPEG("face10.jpg")
+
+```
+
+# Orginal pictures
+
+```{r}
+grays = rgb(red = 0:255/255, blue = 0:255/255, green = 0:255/255)
+heatmap(jpg1,Rowv=NA,Colv=NA,col=grays, scale = "none")
+heatmap(jpg2,Rowv=NA,Colv=NA,col=grays, scale = "none")
+heatmap(jpg3,Rowv=NA,Colv=NA,col=grays, scale = "none")
+heatmap(jpg4,Rowv=NA,Colv=NA,col=grays, scale = "none")
+heatmap(jpg5,Rowv=NA,Colv=NA,col=grays, scale = "none")
+heatmap(jpg6,Rowv=NA,Colv=NA,col=grays, scale = "none")
+heatmap(jpg7,Rowv=NA,Colv=NA,col=grays, scale = "none")
+heatmap(jpg8,Rowv=NA,Colv=NA,col=grays, scale = "none")
+heatmap(jpg9,Rowv=NA,Colv=NA,col=grays, scale = "none")
+heatmap(jpg10,Rowv=NA,Colv=NA,col=grays, scale = "none")
+
+# Represent every image I as a vector T. Now for each image you will have n^2x1 vector.
+
+vec1 <- as.vector(jpg1)
+vec2 <- as.vector(jpg2)
+vec3 <- as.vector(jpg3)
+vec4 <- as.vector(jpg4)
+vec5 <- as.vector(jpg5)
+vec6 <- as.vector(jpg6)
+vec7 <- as.vector(jpg7)
+vec8 <- as.vector(jpg8)
+vec9 <- as.vector(jpg9)
+vec10 <- as.vector(jpg10)
+
+
+
+#Compute the average face vector and subtract the mean face.
+
+bigvec <- cbind(vec1,vec2,vec3,vec4,vec5,vec6,vec7,vec8,vec9,vec10)
+mean <- rowMeans(bigvec)
+
+newvec1 <- vec1 - mean
+newvec2 <- vec2 - mean
+newvec3 <- vec3 - mean
+newvec4 <- vec4 - mean
+newvec5 <- vec5 - mean
+newvec6 <- vec6 - mean
+newvec7 <- vec7 - mean
+newvec8 <- vec8 - mean
+newvec9 <- vec9 - mean
+newvec10 <- vec10 - mean
+```
+
+# Display the pictures.
+
+```{r}
+dim(newvec1) <- c(50,50)
+dim(newvec2) <- c(50,50)
+dim(newvec3) <- c(50,50)
+dim(newvec4) <- c(50,50)
+dim(newvec5) <- c(50,50)
+dim(newvec6) <- c(50,50)
+dim(newvec7) <- c(50,50)
+dim(newvec8) <- c(50,50)
+dim(newvec9) <- c(50,50)
+dim(newvec10) <- c(50,50)
+dim(mean) <- c(50,50)
+
+heatmap(newvec1,Rowv=NA,Colv=NA,col=grays, scale = "none")
+heatmap(newvec2,Rowv=NA,Colv=NA,col=grays, scale = "none")
+heatmap(newvec3,Rowv=NA,Colv=NA,col=grays, scale = "none")
+heatmap(newvec4,Rowv=NA,Colv=NA,col=grays, scale = "none")
+heatmap(newvec5,Rowv=NA,Colv=NA,col=grays, scale = "none")
+heatmap(newvec6,Rowv=NA,Colv=NA,col=grays, scale = "none")
+heatmap(newvec7,Rowv=NA,Colv=NA,col=grays, scale = "none")
+heatmap(newvec8,Rowv=NA,Colv=NA,col=grays, scale = "none")
+heatmap(newvec9,Rowv=NA,Colv=NA,col=grays, scale = "none")
+heatmap(newvec10,Rowv=NA,Colv=NA,col=grays, scale = "none")
+heatmap(mean,Rowv=NA,Colv=NA,col=grays, scale = "none")
+```
+
+```{r}
+newmatrix <- cbind(as.vector(newvec1),as.vector(newvec2),as.vector(newvec3),
+                   as.vector(newvec4),as.vector(newvec5),as.vector(newvec6),
+                   as.vector(newvec7),as.vector(newvec8),as.vector(newvec9),as.vector(newvec10))
+```
+
+# Calculate covariance and eigen values.
+
+```{r}
+covariance <- cov(newmatrix)
+eigenv <- eigen(covariance)
+eigenvalue <- eigenv $ values
+eigenvector <- eigenv $vectors
+#eigenvalue <- eigen(covariance)$values
+#eigenvector <- eigen(covariance)$vectors
+#pca <- princomp(t(newmatrix))
+#pca <- prcomp(newmatrix)
+
+
+#plot(pca)
+#eigenvalue <- pca$sd^2
+#dim(eigenvalue)
+#biplot(pca)
+plot(eigenvalue,type="l")
+```
+
+# Calculate the eigenvectors and display each face with respect to eigenvectors.
+
+```{r}
+eigenvalue1 <- eigenvalue[1]
+eigenvalue2 <- eigenvalue[2]
+eigenvalue3 <- eigenvalue[3]
+eigenface1 <- eigenvalue1 * newmatrix
+eigenface2 <- eigenvalue2 * newmatrix
+eigenface3 <- eigenvalue3 * newmatrix
+eigenface <- eigenface1 + eigenface2 + eigenface3
+
+## eigenface 1
+eigenpic1 <- matrix(ncol=50, nrow=500)
+a <- matrix(ncol=1, nrow=2500)
+
+for (i in 1:10){
+  a<- eigenface1[,i]
+  dim(a)<-c(50,50)
+  eigenpic1[(50*(i-1)+1):(50*i),] <- a
+}
+
+
+for (i in 1:10){
+  heatmap(eigenpic1[(50*(i-1)+1):(50*i),],Rowv=NA,Colv=NA,col=grays, scale = "none")
+}
+
+
+## eigenface 2
+eigenpic2 <- matrix(ncol=50, nrow=500)
+a <- matrix(ncol=1, nrow=2500)
+
+for (i in 1:10){
+  a<- eigenface2[,i]
+  dim(a)<-c(50,50)
+  eigenpic2[(50*(i-1)+1):(50*i),] <- a
+}
+
+for (i in 1:10){
+  heatmap(eigenpic2[(50*(i-1)+1):(50*i),],Rowv=NA,Colv=NA,col=grays, scale = "none")
+}
+
+
+## eigenface 3
+eigenpic3 <- matrix(ncol=50, nrow=500)
+a <- matrix(ncol=1, nrow=2500)
+
+for (i in 1:10){
+  a<- eigenface3[,i]
+  dim(a)<-c(50,50)
+  eigenpic3[(50*(i-1)+1):(50*i),] <- a
+}
+
+for (i in 1:10){
+  heatmap(eigenpic3[(50*(i-1)+1):(50*i),],Rowv=NA,Colv=NA,col=grays, scale = "none")
+}
+
+
+## eigenface
+eigenpic <- matrix(ncol=50, nrow=500)
+a <- matrix(ncol=1, nrow=2500)
+
+for (i in 1:10){
+  a<- eigenface[,i]
+  dim(a)<-c(50,50)
+  eigenpic[(50*(i-1)+1):(50*i),] <- a
+}
+
+
+for (i in 1:10){
+  heatmap(eigenpic[(50*(i-1)+1):(50*i),],Rowv=NA,Colv=NA,col=grays, scale = "none")
+}
+
+```
+
+Since there is no much difference in eigen values, there is no much difference in the eigen faces. Adding these values together does not improve the performance a lot. 
+
+```{r}
+
+#eigenvector <- covariance[,1:4] # k = 4
+#eigenmatrix1 <-eigenvector[,1] * newmatrix
+#eigenmatrix2 <-eigenvector[,2] * newmatrix
+#eigenmatrix3 <-eigenvector[,3] * newmatrix
+#eigenmatrix4 <-eigenvector[,4] * newmatrix
+
+## eigenvector 1
+#eigenpic1 <- matrix(ncol=50, nrow=500)
+#a <- matrix(ncol=1, nrow=2500)
+
+#for (i in 1:10){
+#  a<- eigenmatrix1[,i]
+#  dim(a)<-c(50,50)
+#  eigenpic1[(50*(i-1)+1):(50*i),] <- a
+#}
+
+
+#for (i in 1:10){
+#  heatmap(eigenpic1[(50*(i-1)+1):(50*i),],Rowv=NA,Colv=NA,col=grays, scale = "none")
+#}
+
+#eigenvector 2
+#eigenpic2 <- matrix(ncol=50, nrow=500)
+#a <- matrix(ncol=1, nrow=2500)
+
+#for (i in 1:10){
+#  a<- eigenmatrix2[,i]
+#  dim(a)<-c(50,50)
+#  eigenpic2[(50*(i-1)+1):(50*i),] <- a
+#}
+
+
+#for (i in 1:10){
+#  heatmap(eigenpic2[(50*(i-1)+1):(50*i),],Rowv=NA,Colv=NA,col=grays, scale = "none")
+#}
+
+#eigenvector 3
+#eigenpic3 <- matrix(ncol=50, nrow=500)
+#a <- matrix(ncol=1, nrow=2500)
+
+#for (i in 1:10){
+#  a<- eigenmatrix3[,i]
+#  dim(a)<-c(50,50)
+#  eigenpic3[(50*(i-1)+1):(50*i),] <- a
+#}
+
+
+#for (i in 1:10){
+#  heatmap(eigenpic3[(50*(i-1)+1):(50*i),],Rowv=NA,Colv=NA,col=grays, scale = "none")
+#}
+
+#heatmap(eigenpic1[1:50,],Rowv=NA,Colv=NA,col=grays, scale = "none")
+
+```
+
+
+# Test
+## First test
+First, test a picture that is exactly in the training.
+
+```{r}
+test1 <- readJPEG("face2.jpg")
+featuretest1 <- as.vector(test1) - as.vector(mean)
+dis1 <- matrix(nrow=2500, ncol=10)
+distance1 <- c()
+for (i in 1:10) {
+  dis1[,i] <- eigenvalue1 * featuretest1 -eigenface1[,i]
+  distance1[i] <- sum(abs(dis1[,i]))/2500
+}
+
+distance1
+which.min(distance1)
+distance1[which.min(distance1)]
+```
+
+This exactly meets the original picture. The distance is 0. 
+
+```{r}
+dis1 <- matrix(nrow=2500, ncol=10)
+distance1 <- c()
+for (i in 1:10) {
+  dis1[,i] <- eigenvalue2 * featuretest1 -eigenface2[,i]
+  distance1[i] <- sum(abs(dis1[,i]))/2500
+}
+
+distance1
+which.min(distance1)
+distance1[which.min(distance1)]
+```
+
+When we use the second best engin value, the result is still the same, and the distance is still 0.
+
+## Second test
+
+```{r}
+test2 <- readJPEG("face12.jpg")
+test2 <- test2[,,1]
+heatmap(test2,Rowv=NA,Colv=NA,col=grays, scale = "none")
+
+
+featuretest2 <- as.vector(test2) - as.vector(mean)
+dis2 <- matrix(nrow=2500, ncol=10)
+distance2 <- c()
+for (i in 1:10) {
+  dis2[,i] <- eigenvalue1 * featuretest2 -eigenface1[,i]
+  distance2[i] <- sum(abs(dis2[,i]))/2500
+}
+
+distance2
+which.min(distance2)
+distance2[which.min(distance2)]
+```
+
+
+```{r}
+dis2 <- matrix(nrow=2500, ncol=10)
+distance2 <- c()
+for (i in 1:10) {
+  dis2[,i] <- eigenvalue2 * featuretest2 -eigenface2[,i]
+  distance2[i] <- sum(abs(dis2[,i]))/2500
+}
+
+distance2
+which.min(distance2)
+distance2[which.min(distance2)]
+```
+
+When I plug in another my picture from a direction, it is recognized as the forth person, but the differneve between each picture is really small, the distance difference between 2nd and 4th is 0.04.
+
+## Third test
+
+```{r}
+test3 <- readJPEG("face11.jpg")
+heatmap(test3,Rowv=NA,Colv=NA,col=grays, scale = "none")
+
+
+featuretest3 <- as.vector(test3) - as.vector(mean)
+dis3 <- matrix(nrow=2500, ncol=10)
+distance3 <- c()
+for (i in 1:10) {
+  dis3[,i] <- eigenvalue1 * featuretest3 -eigenface1[,i]
+  distance3[i] <- sum(abs(dis3[,i]))/2500
+}
+
+distance3
+which.min(distance3)
+distance3[which.min(distance3)]
+```
+
+
